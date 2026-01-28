@@ -54,9 +54,8 @@ export default function TrendBoss() {
 
       // Load Stripe and redirect to checkout
       const stripeModule = await import('@stripe/stripe-js');
-      const stripe = await stripeModule.loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_YOUR_KEY_HERE'
-      );
+      const { loadStripe } = await import('@stripe/stripe-js');
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_YOUR_KEY');
       
       if (!stripe) {
         alert('Failed to load Stripe. Please refresh and try again.');
