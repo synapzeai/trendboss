@@ -29,54 +29,47 @@ export default function TrendBoss() {
     setShowSignup(true);
   };
 
-  const handleSignup = async () => {
-    try {
-      setShowSignup(false); // Close modal while processing
-      
-      // Real Stripe integration
-      const response = await fetch('/api/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          priceId: STRIPE_PRICE_ID,
-        }),
-      });
-
-      const { sessionId, error } = await response.json();
-
-      if (error) {
-        alert('Error creating checkout session. Please try again.');
-        setShowSignup(true);
-        return;
-      }
-
-      // Load Stripe and redirect to checkout
-      const stripeModule = await import('@stripe/stripe-js');
-      const { loadStripe } = await import('@stripe/stripe-js');
-      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_YOUR_KEY');
-      
-      if (!stripe) {
-        alert('Failed to load Stripe. Please refresh and try again.');
-        setShowSignup(true);
-        return;
-      }
-
-      const { error: stripeError } = await stripe.redirectToCheckout({
-        sessionId: sessionId,
-      });
-
-      if (stripeError) {
-        alert('Error redirecting to checkout. Please try again.');
-        setShowSignup(true);
-      }
-    } catch (error) {
-      console.error('Signup error:', error);
-      alert('An error occurred. Please try again.');
+ const handleSignup = async () => {
+  try {
+    setShowSignup(false);
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId: STRIPE_PRICE_ID }),
+    });
+    
+    const { sessionId, error } = await response.json();
+    
+    if (error) {
+      alert('Error creating checkout session. Please try again.');
+      setShowSignup(true);
+      return;
+    }
+    
+    // Load Stripe and redirect
+    const { loadStripe } = await import('@stripe/stripe-js');
+    const stripe = await loadStripe(
+      process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_YOUR_KEY'
+    );
+    
+    if (!stripe) {
+      alert('Failed to load Stripe.');
+      setShowSignup(true);
+      return;
+    }
+    
+    const result = await stripe.redirectToCheckout({ sessionId });
+    
+    if (result.error) {
+      alert('Error redirecting to checkout.');
       setShowSignup(true);
     }
-  };
+  } catch (error) {
+    console.error('Signup error:', error);
+    alert('An error occurred. Please try again.');
+    setShowSignup(true);
+  }
+};
 
   const generateResearchBrief = async () => {
     if (!isPaid) {
