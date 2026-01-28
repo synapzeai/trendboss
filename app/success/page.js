@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle } from 'lucide-react';
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   
   useEffect(() => {
@@ -37,5 +37,17 @@ export default function SuccessPage() {
         <p className="text-orange-300 text-sm mt-6">Redirecting in 3 seconds...</p>
       </div>
     </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-black via-purple-950 to-orange-950 text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 }
