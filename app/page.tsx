@@ -8,8 +8,7 @@ export default function TrendBoss() {
   const [topic, setTopic] = useState('');
   const [platform, setPlatform] = useState('TikTok');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [trends, setTrends] = useState<any[]>([]);
+const [result, setResult] = useState<string | null>(null);  const [trends, setTrends] = useState<any[]>([]);
   const [trendsLoading, setTrendsLoading] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
