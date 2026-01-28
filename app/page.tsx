@@ -23,37 +23,26 @@ export default function TrendBoss() {
   const handleSignup = async () => {
   try {
     setShowSignup(false);
+    
     const response = await fetch('/api/create-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ priceId: STRIPE_PRICE_ID }),
     });
     
-    const { sessionId, error } = await response.json();
+    const data = await response.json();
     
-    if (error) {
+    if (data.error) {
       alert('Error creating checkout session. Please try again.');
       setShowSignup(true);
       return;
     }
     
-    const { loadStripe } = await import('@stripe/stripe-js');
-    const stripe = await loadStripe(
-      process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_DzRLtJ39RAvSkMzxMJR6IDs500mK7bMnzV'
-    );
-    
-    if (!stripe) {
-      alert('Failed to load Stripe.');
-      setShowSignup(true);
-      return;
-    }
-    
-    const { error: checkoutError } = await (stripe as any).redirectToCheckout({ 
-      sessionId 
-    });
-
-    if (checkoutError) {
-      alert('Error redirecting to checkout.');
+    // NEW METHOD: Use the session URL directly
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Error: No checkout URL received.');
       setShowSignup(true);
     }
   } catch (error) {
