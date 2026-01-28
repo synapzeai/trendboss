@@ -15,7 +15,8 @@ export async function POST(request) {
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?canceled=true`,
     });
     
-    return NextResponse.json({ sessionId: session.id });
+    // CHANGED: Return url instead of sessionId
+    return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Stripe error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
