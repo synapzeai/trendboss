@@ -49,8 +49,8 @@ export default function TrendBoss() {
     // Load Stripe and redirect
     const { loadStripe } = await import('@stripe/stripe-js');
     const stripe = await loadStripe(
-      process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_YOUR_KEY'
-    );
+  process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_DzRLtJ39RAvSkMzxMJR6IDs500mK7bMnzV'
+);
     
     if (!stripe) {
       alert('Failed to load Stripe.');
@@ -58,8 +58,8 @@ export default function TrendBoss() {
       return;
     }
     
-    const result = await stripe.redirectToCheckout({ sessionId });
-    
+const result = await (stripe as any).redirectToCheckout({ sessionId });
+
     if (result.error) {
       alert('Error redirecting to checkout.');
       setShowSignup(true);
