@@ -1,25 +1,23 @@
-'use client';
-import { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { CheckCircle } from 'lucide-react';
+import { NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
-export default function SuccessPage() {
-  const searchParams = useSearchParams();
-  useEffect(() => {
-    const sessionId = searchParams.get('session_id');
-    if (sessionId) {
-      sessionStorage.setItem('trendboss_paid', 'true');
-      setTimeout(() => window.location.href = '/', 3000);
-    }
-  }, [searchParams]);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-purple-950 to-orange-950 text-white flex items-center justify-center p-6">
-      <div className="text-center max-w-md">
-        <CheckCircle className="w-24 h-24 text-green-400 mx-auto mb-6" />
-        <h1 className="text-5xl font-bold mb-4">Welcome to TrendBoss Pro! 🎉</h1>
-        <p className="text-xl text-orange-200/80">Redirecting...</p>
-      </div>
-    </div>
-  );
+export async function POST(request) {
+  try {
+    const { priceId } = await request.json();
+    
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/?canceled=true`,
+    });
+    
+    return NextResponse.json({ sessionId: session.id });
+  } catch (error) {
+    console.error('Stripe error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
