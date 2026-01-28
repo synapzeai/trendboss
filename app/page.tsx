@@ -20,12 +20,48 @@ export default function TrendBoss() {
     setShowSignup(true);
   };
 
-  const handleSignup = () => {
-    alert('In production, this redirects to Stripe!\n\nFor demo: Simulating payment...');
-    setIsPaid(true);
+  const handleSignup = async () => {
+  try {
     setShowSignup(false);
-    setActiveTab('trends');
-  };
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId: STRIPE_PRICE_ID }),
+    });
+    
+    const { sessionId, error } = await response.json();
+    
+    if (error) {
+      alert('Error creating checkout session. Please try again.');
+      setShowSignup(true);
+      return;
+    }
+    
+    const { loadStripe } = await import('@stripe/stripe-js');
+    const stripe = await loadStripe(
+      process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || 'pk_test_DzRLtJ39RAvSkMzxMJR6IDs500mK7bMnzV'
+    );
+    
+    if (!stripe) {
+      alert('Failed to load Stripe.');
+      setShowSignup(true);
+      return;
+    }
+    
+    const { error: checkoutError } = await (stripe as any).redirectToCheckout({ 
+      sessionId 
+    });
+
+    if (checkoutError) {
+      alert('Error redirecting to checkout.');
+      setShowSignup(true);
+    }
+  } catch (error) {
+    console.error('Signup error:', error);
+    alert('An error occurred. Please try again.');
+    setShowSignup(true);
+  }
+};
 
 const getScoreColor = (score: number) => {
       if (score >= 80) return 'text-green-400';
