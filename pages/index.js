@@ -18,8 +18,27 @@ export default function TrendBoss() {
   
   const STRIPE_PRICE_ID = 'price_1SuUttC8WQiKTNRfFn36VTLS';
 
- const handleGetStarted = () => {
-  router.push('/signup');  // Redirects to signup page
+ const handleGetStarted = async () => {
+  try {
+    const response = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        priceId: 'price_1SuUttC8WQiKTNRfFn36VTLS'
+      }),
+    });
+    
+    const data = await response.json();
+    
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Error creating checkout session');
+    }
+  } catch (error) {
+    console.error('Checkout error:', error);
+    alert('An error occurred. Please try again.');
+  }
 };
 
   const handleSignup = async () => {
