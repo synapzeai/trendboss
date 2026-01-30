@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Zap, TrendingUp, Target, Sparkles, ChevronRight, RefreshCw, Clock, Flame, ArrowUpRight, Crown, X, Check, ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/router';  // ADD THIS LINE
+import { useAuth } from '../contexts/AuthContext';  // ADD THIS LINE
+import { Search, Zap, TrendingUp, Target, Sparkles, ChevronRight, RefreshCw, Clock, Flame, ArrowUpRight, Crown, X, Check, ArrowRight, LogOut } from 'lucide-react';  // ADD LogOut
 
 export default function TrendBoss() {
+  const router = useRouter();
+  const { user, loading: authLoading, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('landing');
   const [topic, setTopic] = useState('');
   const [platform, setPlatform] = useState('TikTok');
