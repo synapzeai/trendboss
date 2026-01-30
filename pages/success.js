@@ -64,26 +64,35 @@ export default function Success() {
               <p className="text-gray-400">Please wait while we set up your account</p>
             </>
           )}
-cat > pages/api/verify-session.js << 'EOF'
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
-export default async function handler(req, res) {
-  const { session_id } = req.query;
-
-  if (!session_id) {
-    return res.status(400).json({ error: 'Missing session_id' });
-  }
-
-  try {
-    const session = await stripe.checkout.sessions.retrieve(session_id);
-    
-    return res.status(200).json({
-      customer_email: session.customer_details.email,
-      customer_id: session.customer,
-      subscription_id: session.subscription,
-    });
-  } catch (error) {
-    console.error('Stripe error:', error);
-    return res.status(500).json({ error: error.message });
-  }
+          
+          {status === 'success' && (
+            <>
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500/20 rounded-full mb-6">
+                <Check className="w-8 h-8 text-green-400" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Payment Successful! 🎉</h2>
+              <p className="text-gray-400 mb-4">Your account has been created</p>
+              <p className="text-sm text-orange-300">Redirecting to dashboard...</p>
+            </>
+          )}
+          
+          {status === 'error' && (
+            <>
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-red-500/20 rounded-full mb-6">
+                <Flame className="w-8 h-8 text-red-400" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2">Something went wrong</h2>
+              <p className="text-gray-400 mb-6">Please contact support</p>
+              <button 
+                onClick={() => router.push('/')}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-xl transition-all hover:scale-105"
+              >
+                Back to Home
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
