@@ -14,9 +14,9 @@ export default function TrendBoss() {
   
   const STRIPE_PRICE_ID = 'price_1SuUttC8WQiKTNRfFn36VTLS';
 
-  const handleGetStarted = () => {
-    setShowSignup(true);
-  };
+ const handleGetStarted = () => {
+  router.push('/signup');  // Redirects to signup page
+};
 
   const handleSignup = async () => {
   try {
